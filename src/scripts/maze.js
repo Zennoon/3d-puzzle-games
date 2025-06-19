@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as CANNON from 'cannon-es';
 import { Sky } from 'three/addons/objects/Sky.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
@@ -52,6 +53,25 @@ wallColorTexture.wrapT = THREE.RepeatWrapping;
 wallARMTexture.wrapT = THREE.RepeatWrapping;
 wallNormalTexture.wrapT = THREE.RepeatWrapping;
 
+/**
+ * Physics
+ */
+const world = new CANNON.World();
+world.broadphase = new CANNON.SAPBroadphase(world);
+world.allowSleep = true;
+world.gravity.set(0, 0, 0);
+
+// Materials
+const floorPhysicsMaterial = new CANNON.Material('default');
+const wallPhysicsMaterial = new CANNON.Material('wall');
+const ballPhysicsMaterial = new CANNON.Material('ball');
+
+const wallBallContactMaterial = new CANNON.ContactMaterial(wallPhysicsMaterial, ballPhysicsMaterial, {
+    friction: 0.7,
+    restitution: 0.1
+});
+
+world.addContactMaterial(wallBallContactMaterial);
 
 /**
  * Objects
@@ -70,7 +90,8 @@ const floor = new THREE.Mesh(
         normalMap: floorNormalTexture,
         displacementMap: floorDisplacementTexture,
         displacementScale: 0.3,
-        displacementBias: - 0.36
+        displacementBias: - 0.36,
+        side: THREE.DoubleSide
     })
 );
 
@@ -90,16 +111,116 @@ const wallMaterial = new THREE.MeshStandardMaterial({
     aoMap: wallARMTexture,
     roughnessMap: wallARMTexture,
     metalnessMap: wallARMTexture,
-    normalMap: wallNormalTexture
+    normalMap: wallNormalTexture,
+    side: THREE.DoubleSide
 });
 
-const wall1 = new THREE.Mesh(wallGeometry, wallMaterial);
-wall1.position.set(-4, 1.5, 0);
-wall1.scale.z = 10;
-maze.add(wall1);
+function createWall(x, y, z, scale, rotate = false) {
+    const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+    wall.scale.z = scale;
+    if (rotate) {
+        wall.rotation.y = - Math.PI * 0.5;
+    }
+    wall.position.set(x, y, z);
+    maze.add(wall);
+    const wallShape = new CANNON.Box(new CANNON.Vec3(0.125, 1.5, scale / 2));
+    const wallBody = new CANNON.Body({ mass: 0, shape: wallShape, material: wallPhysicsMaterial });
+    wallBody.position.copy(wall.position);
+    const quat = new CANNON.Quaternion();
+    quat.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), wall.rotation.y);
+    wallBody.quaternion.copy(quat);
+    wallBody.allowSleep = true;
+    world.addBody(wallBody);
+}
 
-const wall2 = new THREE.Mesh(wallGeometry, wallMaterial);
-wall2.position.set()
+// Inner Walls
+createWall(-3, 1.5, 3, 4);
+createWall(-2.5, 1.5, 1, 1, true);
+createWall(-2, 1.5, 3, 2);
+createWall(-1, 1.5, 3, 2, true);
+createWall(0, 1.5, 2, 4, true);
+createWall(1, 1.5, 3, 2);
+createWall(1, 1.5, 4, 4, true);
+createWall(2, 1.5, 1.5, 1);
+createWall(2.5, 1.5, 1, 1, true);
+createWall(3, 1.5, 1.5, 1);
+createWall(3, 1.5, 3, 2, true);
+createWall(-1, 1.5, 1, 2);
+createWall(-2, 1.5, 0, 4, true);
+createWall(0, 1.5, -1.5, 3);
+createWall(-2, 1.5, -1, 2);
+createWall(-1.5, 1.5, -2, 1, true);
+createWall(-1, 1.5, -1.5, 1);
+createWall(-1.5, 1.5, -3, 3, true);
+createWall(-3, 1.5, -2, 2);
+createWall(1, 1.5, -1, 2, true);
+createWall(2, 1.5, -1.5, 1);
+createWall(2, 1.5, -3, 2, true);
+createWall(3, 1.5, -1.5, 3);
+createWall(2, 1.5, 0, 2, true);
+createWall(1, 1.5, 0.5, 1);
+createWall(0.5, 1.5, 1, 1, true);
+createWall(0.5, 1.5, -4, 7, true);
+createWall(1, 1.5, -3, 2);
+
+// Outer Walls
+createWall(-4, 1.5, 0, 10);
+createWall(0.5, 1.5, 5, 7, true);
+createWall(-0.5, 1.5, -5, 7, true);
+createWall(4, 1.5, 0, 10);
+
+// Ball
+const ball = new THREE.Mesh(
+    new THREE.SphereGeometry(0.3, 32, 32),
+    new THREE.MeshStandardMaterial({
+        color: 'red'
+    })
+);
+
+ball.position.set(-3.4375, 0.3, 6)
+scene.add(ball);
+
+const ballShape = new CANNON.Sphere(0.3);
+const ballBody = new CANNON.Body({
+    mass: 1,
+    shape: ballShape,
+    material: ballPhysicsMaterial
+});
+
+ballBody.position.copy(ball.position);
+ballBody.velocity = new CANNON.Vec3(0, 0, 0);
+ballBody.sleep();
+world.addBody(ballBody);
+
+window.addEventListener('keydown', ({ key }) => {
+    switch (key) {
+        case 'ArrowUp':
+            ballBody.wakeUp();
+            ballBody.velocity = new CANNON.Vec3(0, 0, 0);
+            ballBody.applyLocalImpulse(new CANNON.Vec3(0, 0, -1), new CANNON.Vec3(0, 0, 0));
+            break;
+        case 'ArrowLeft':
+            ballBody.velocity = new CANNON.Vec3(0, 0, 0);
+            ballBody.wakeUp();
+            ballBody.applyLocalImpulse(new CANNON.Vec3(-1, 0, 0), new CANNON.Vec3(0, 0, 0));
+            break;
+        case 'ArrowRight':
+            ballBody.velocity = new CANNON.Vec3(0, 0, 0);
+            ballBody.wakeUp();
+            ballBody.applyLocalImpulse(new CANNON.Vec3(1, 0, 0), new CANNON.Vec3(0, 0, 0));
+            break;
+        case 'ArrowDown':
+            ballBody.velocity = new CANNON.Vec3(0, 0, 0);
+            ballBody.wakeUp();
+            ballBody.applyLocalImpulse(new CANNON.Vec3(0, 0, 1), new CANNON.Vec3(0, 0, 0));
+            break;
+        case 'h':
+            ballBody.velocity = new CANNON.Vec3(0, 0, 0);
+            break;
+        default:
+            ballBody.sleep()
+    }
+})
 
 /**
  * Sizes
@@ -128,7 +249,7 @@ window.addEventListener('resize', () =>
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#86cdff', 0.275)
+const ambientLight = new THREE.AmbientLight('#86cdff', 1)
 scene.add(ambientLight)
 
 // Directional light
@@ -148,8 +269,7 @@ camera.position.y = 5;
 scene.add(camera)
 
 // Controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
+let controls;
 
 /**
  * Renderer
@@ -182,11 +302,41 @@ scene.fog = new THREE.FogExp2('#02343f', 0.1);
 /**
  * Animate
  */
-
+const clock = new THREE.Clock();
+let oldElapsedTime = 0;
+let completed = false;
 const tick = () =>
 {
-    // Update controls
-    controls.update()
+    const elapsedTime = clock.getElapsedTime();
+    const deltaTime = elapsedTime - oldElapsedTime;
+    oldElapsedTime = elapsedTime;
+    // // Update controls
+    if (controls) controls.update();
+
+    // Update physics world
+    world.step(1 / 60, deltaTime);
+
+    // Update objects
+    ball.position.copy(ballBody.position);
+    ball.quaternion.copy(ballBody.quaternion);
+
+    if (ball.position.x > 3 && ball.position.z < -5) {
+        completed = true;
+    }
+
+    // Update camera
+    if (completed && !controls) {
+        alert('Congratulations! You have finished the maze!')
+        camera.position.z = 10;
+        camera.position.y = 5;
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        controls = new OrbitControls(camera, canvas)
+        controls.enableDamping = true
+    } else if (!completed) {
+        camera.position.copy(ball.position);
+        camera.position.y = 4;
+        camera.lookAt(ball.position);
+    }
 
     // Render
     renderer.render(scene, camera)
@@ -196,4 +346,3 @@ const tick = () =>
 }
 
 tick()
-
