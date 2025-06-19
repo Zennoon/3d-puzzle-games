@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/svg+xml" href="../images/javascript.svg" />
+        <link rel="stylesheet" href="../style.css">
+        <script src="https://kit.fontawesome.com/4a80508866.js" crossorigin="anonymous"></script>
+        <title>3D Games: Tower of Hanoi</title>
+    </head>
+    <body class="bg-gray-800 text-white h-full">
+        <header class="w-full px-12 py-4 bg-gray-900 flex justify-between">
+            <a href="/" class="text-xl text-gray-100 hover:text-white transition-colors">3D Puzzle Games</a>
+            <div class="flex items-center gap-x-4">
+                <p class="text-green-300">Number of disks</p>
+                <i class="fa-solid fa-chevron-up" id="incr-disks"></i>
+                <span id="num-disks">4</span>
+                <i class="fa-solid fa-chevron-down" id="decr-disks"></i>
+            </div>
+        </header>
+        <canvas id="webgl"></canvas>
+        <script type="module" src="../scripts/hanoi.js"></script>
+    </body>
+</html>

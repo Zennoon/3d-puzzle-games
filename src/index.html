@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="images/javascript.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css">
+    <title>3D Puzzle Games</title>
+  </head>
+  <body class="font-sans flex flex-col">
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-4">
+      <h1 class="text-5xl md:text-6xl font-bold mb-4">Challenge Your Mind in 3D</h1>
+      <p class="text-lg md:text-xl mb-6 max-w-2xl">Explore interactive 3D puzzle games built with Three.js. Sharpen your logic and have fun!</p>
+      <a href="#games" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl text-lg transition">Play Now</a>
+    </section>
+
+    <!-- Games Carousel -->
+    <section id="games" class="bg-gray-800 py-16 px-4 w-full mx-2">
+      <h2 class="text-3xl font-bold text-center mb-16">Available Games</h2>
+      <div class="flex space-x-6 snap-x snap-mandatory px-4">
+        <div class="w-full">
+          <div class="w-full flex justify-center gap-x-10">
+            <div class="snap-center w-80 bg-gray-700 rounded-2xl overflow-hidden shadow-lg">
+              <img src="images/hanoi.webp" alt="Rubik's Cube" class="w-full h-48 object-cover hover:scale-105 transition-all">
+              <div class="p-4 flex flex-col gap-y-2">
+                <div>
+                  <h3 class="text-xl font-semibold mb-2">Tower of Hanoi</h3>
+                  <p class="text-sm text-gray-300 mb-4">Twist and solve the classic 3D cube challenge.</p>
+                </div>
+                <a href="/games/hanoi" class="bg-green-500 hover:bg-green-600 hover:text-white transition-colors duration-300 block text-center px-4 py-2 rounded-lg text-white text-sm">Play</a>
+              </div>
+            </div>
+            <div class="snap-center w-80 bg-gray-700 rounded-2xl overflow-hidden shadow-lg">
+              <img src="images/maze.webp" alt="Rubik's Cube" class="w-full h-48 object-cover hover:scale-105 transition-all">
+              <div class="p-4 flex flex-col gap-y-2">
+                <div>
+                  <h3 class="text-xl font-semibold mb-2">Maze</h3>
+                  <p class="text-sm text-gray-300 mb-4">Twist and solve the classic 3D cube challenge.</p>
+                </div>
+                <a href="/games/maze" class="bg-green-500 hover:bg-green-600 hover:text-white transition-colors duration-300 block text-center px-4 py-2 rounded-lg text-white text-sm">Play</a>
+              </div>
+            </div>
+            <div class="snap-center w-80 bg-gray-700 rounded-2xl overflow-hidden shadow-lg">
+              <img src="images/rubiks-cube.webp" alt="Rubik's Cube" class="w-full h-48 object-cover hover:scale-105 transition-all">
+              <div class="p-4 flex flex-col gap-y-2">
+                <div>
+                  <h3 class="text-xl font-semibold mb-2">Rubik's Cube</h3>
+                  <p class="text-sm text-gray-300 mb-4">Twist and solve the classic 3D cube challenge.</p>
+                </div>
+                <a href="/games/rubiks" class="bg-green-500 hover:bg-green-600 hover:text-white transition-colors duration-300 block text-center px-4 py-2 rounded-lg text-white text-sm">Play</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

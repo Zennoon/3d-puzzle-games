@@ -1,0 +1,21 @@
+{
+  "name": "3d-games",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.10",
+    "@tweenjs/tween.js": "^25.0.0",
+    "tailwindcss": "^4.1.10",
+    "three": "^0.177.0",
+    "vite-plugin-restart": "^0.4.2"
+  }
+}
