@@ -3,6 +3,14 @@ import * as CANNON from 'cannon-es';
 import { Sky } from 'three/addons/objects/Sky.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+const toggleInfo = document.getElementById('toggle-help');
+const helpDiv = document.getElementById('help-div');
+
+// Toggle help information
+toggleInfo.addEventListener('click', () => {
+    helpDiv.classList.toggle('hidden');
+});
+
 const canvas = document.getElementById('webgl')
 const scene = new THREE.Scene();
 

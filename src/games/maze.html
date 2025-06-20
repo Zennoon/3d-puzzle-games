@@ -5,13 +5,31 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="icon" type="image/svg+xml" href="../images/javascript.svg" />
         <link rel="stylesheet" href="../style.css">
+        <script src="https://kit.fontawesome.com/4a80508866.js" crossorigin="anonymous"></script>
         <title>3D Games: Maze</title>
     </head>
     <body class="bg-gray-800 text-white h-full overflow-hidden">
         <header class="w-full px-12 py-4 bg-gray-900 flex justify-between">
             <a href="/" class="text-xl text-gray-100 hover:text-white transition-colors">3D Puzzle Games</a>
+            <div class="flex items-center gap-x-4">
+                <div id="toggle-help">
+                    <i class="fa-solid fa-circle-question cursor-pointer"></i>
+                </div>
+            </div>
         </header>
-        <canvas id="webgl"></canvas>
+        <div class="relative">
+            <canvas id="webgl"></canvas>
+            <div class="absolute right-5 top-5 p-4 bg-gray-900 flex flex-col gap-y-2 text-gray-400 w-80" id="help-div">
+                <div class="flex justify-between">
+                    <span>Help</span>
+                </div>
+                <div class="flex flex-col gap-y-2">
+                    <hr>
+                    <p>Use the arrow keys to roll the ball through the maze.</p>
+                    <p>Reach the goal without getting stuck in dead ends!</p>
+                </div>
+            </div>            
+        </div>
         <script type="module" src="../scripts/maze.js"></script>
     </body>
 </html>

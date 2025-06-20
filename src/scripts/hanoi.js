@@ -3,6 +3,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { Tween, Group, Easing } from '@tweenjs/tween.js';
 
+const toggleInfo = document.getElementById('toggle-help');
+const helpDiv = document.getElementById('help-div');
+
+// Toggle help information
+toggleInfo.addEventListener('click', () => {
+    helpDiv.classList.toggle('hidden');
+});
+
 /**
  * Textures
  */
