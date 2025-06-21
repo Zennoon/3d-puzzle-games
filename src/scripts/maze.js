@@ -15,6 +15,18 @@ const canvas = document.getElementById('webgl')
 const scene = new THREE.Scene();
 
 /**
+ * Sounds
+ */
+const hitSound = new Audio('../sounds/hit.mp3');
+
+const playHitSound = (collision) => {
+    console.log('object');
+    hitSound.volume = 1;
+    hitSound.currentTime = 0;
+    hitSound.play();
+}
+
+/**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
@@ -134,33 +146,38 @@ function createWall(x, y, z, scale, rotate = false) {
     const wallShape = new CANNON.Box(new CANNON.Vec3(0.125, 1.5, scale / 2));
     const wallBody = new CANNON.Body({ mass: 0, shape: wallShape, material: wallPhysicsMaterial });
     wallBody.position.copy(wall.position);
-    const quat = new CANNON.Quaternion();
-    quat.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), wall.rotation.y);
-    wallBody.quaternion.copy(quat);
-    wallBody.allowSleep = true;
+    if (rotate) {
+        const quat = new CANNON.Quaternion();
+        quat.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), wall.rotation.y);
+        wallBody.quaternion.copy(quat);
+    }
+    //wallBody.allowSleep = true;
     world.addBody(wallBody);
-}
+}   
 
-// Inner Walls
+createWall(-4, 1.5, 0, 10);
+createWall(-2, 1.5, 0, 4, true);
+createWall(-3, 1.5, -2, 2);
+createWall(-0.5, 1.5, -5, 7, true);
+createWall(0.5, 1.5, -4, 7, true);
 createWall(-3, 1.5, 3, 4);
 createWall(-2.5, 1.5, 1, 1, true);
+createWall(-2, 1.5, -1, 2);
+createWall(-1.5, 1.5, -2, 1, true);
+createWall(-1, 1.5, -1.5, 1);
 createWall(-2, 1.5, 3, 2);
+createWall(-1.5, 1.5, -3, 3, true);
 createWall(-1, 1.5, 3, 2, true);
 createWall(0, 1.5, 2, 4, true);
+createWall(0.5, 1.5, 5, 7, true);
 createWall(1, 1.5, 3, 2);
 createWall(1, 1.5, 4, 4, true);
+createWall(-1, 1.5, 1, 2);
 createWall(2, 1.5, 1.5, 1);
 createWall(2.5, 1.5, 1, 1, true);
 createWall(3, 1.5, 1.5, 1);
 createWall(3, 1.5, 3, 2, true);
-createWall(-1, 1.5, 1, 2);
-createWall(-2, 1.5, 0, 4, true);
 createWall(0, 1.5, -1.5, 3);
-createWall(-2, 1.5, -1, 2);
-createWall(-1.5, 1.5, -2, 1, true);
-createWall(-1, 1.5, -1.5, 1);
-createWall(-1.5, 1.5, -3, 3, true);
-createWall(-3, 1.5, -2, 2);
 createWall(1, 1.5, -1, 2, true);
 createWall(2, 1.5, -1.5, 1);
 createWall(2, 1.5, -3, 2, true);
@@ -168,13 +185,7 @@ createWall(3, 1.5, -1.5, 3);
 createWall(2, 1.5, 0, 2, true);
 createWall(1, 1.5, 0.5, 1);
 createWall(0.5, 1.5, 1, 1, true);
-createWall(0.5, 1.5, -4, 7, true);
 createWall(1, 1.5, -3, 2);
-
-// Outer Walls
-createWall(-4, 1.5, 0, 10);
-createWall(0.5, 1.5, 5, 7, true);
-createWall(-0.5, 1.5, -5, 7, true);
 createWall(4, 1.5, 0, 10);
 
 // Ball
@@ -197,7 +208,7 @@ const ballBody = new CANNON.Body({
 
 ballBody.position.copy(ball.position);
 ballBody.velocity = new CANNON.Vec3(0, 0, 0);
-ballBody.sleep();
+ballBody.addEventListener('collide', playHitSound);
 world.addBody(ballBody);
 
 window.addEventListener('keydown', ({ key }) => {
