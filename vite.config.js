@@ -21,7 +21,7 @@ export default defineConfig({
                 main: resolve(__dirname, 'src/index.html'),
                 hanoi: resolve(__dirname, 'src/games/hanoi.html'),
                 maze: resolve(__dirname, 'src/games/maze.html'),
-                fifteen: resolve(__dirname, 'src/games/maze.html')
+                fifteen: resolve(__dirname, 'src/games/fifteen.html')
             }
         }
     },
