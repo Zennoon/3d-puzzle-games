@@ -4,6 +4,17 @@ import { Tween, Group, Easing } from '@tweenjs/tween.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 /**
+ * Sounds
+ */
+const hitSound = new Audio('../sounds/hit.mp3');
+
+const playHitSound = () => {
+    hitSound.volume = 1;
+    hitSound.currentTime = 0;
+    hitSound.play();
+}
+
+/**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader();
@@ -62,6 +73,7 @@ const material = new THREE.MeshStandardMaterial({
     normalMap: woodNormalTexture
 });
 
+// Floor of the container
 const base = new THREE.Mesh(geometry, material);
 base.scale.set(4.5, 0.2, 4.5);
 container.add(base);
@@ -95,8 +107,8 @@ const gridSize = 4;
 let emptyPos = { x: 3, y: 3 };
 const tiles = [];
 
+// Used to write the number on the tile
 function createNumberTexture(num) {
-    // Used to write the number on the tile
     const size = 128;
     const canvas = document.createElement('canvas');
     canvas.width = size;
@@ -112,6 +124,7 @@ function createNumberTexture(num) {
     return new THREE.CanvasTexture(canvas);
 }
 
+// Creates a tile with the given number in the given x, y coordinate
 function createTile(num, x, y) {
     const geometry = new THREE.BoxGeometry(1, 0.2, 1);
     const material = new THREE.MeshStandardMaterial({ map:  createNumberTexture(num) });
@@ -122,21 +135,56 @@ function createTile(num, x, y) {
     return tile;
 }
 
-function setupTiles() {
-    const nums = [...Array(15).keys()].map(n => n + 1);
-    for (let y = 0; y < gridSize; y++) {
-        for (let x = 0; x < gridSize; x++) {
-            const index = y * gridSize + x;
-            if (index < 15) {
-                const n = nums[index];
-                const tile = createTile(n, x, y);
-                tiles.push(tile);
+
+// Makes sure that a given tiles permutation is solvable
+function isSolvable(tiles) {
+    let inversions = 0;
+    for (let i = 0; i < tiles.length; i++) {
+        for (let j = i + 1; j < tiles.length; j++) {
+            if (tiles[i] && tiles[j] && tiles[i] > tiles[j]) {
+                inversions++;
             }
         }
     }
-    tiles.push(null);
+
+    const blankIndex = tiles.indexOf(0);
+    const blankRowFromBottom = 3 - Math.floor(blankIndex / 4);
+
+    return (inversions + blankRowFromBottom) % 2 === 0;
 }
 
+// Generates a tiles permutation that is solvable
+function generateSolvableTiles() {
+    const tiles = Array.from({ length: 16 }, (_, i) => i); // 0 is considered as the empty 
+    let shuffled;
+
+    // Shuffle the array until it is solvable
+    do {
+        shuffled = [...tiles].sort(() => Math.random() - 0.5);
+    } while (!isSolvable(shuffled));
+
+    return shuffled;
+}
+
+// Create the tile grid
+function setupTiles() {
+    const nums = generateSolvableTiles();
+    for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+            const index = y * gridSize + x;
+            const n = nums[index];
+            if (n === 0) {
+                tiles.push(null);
+                emptyPos = { x, y };
+                continue;
+            }
+            const tile = createTile(n, x, y);
+            tiles.push(tile);
+        }
+    }
+}
+
+// Checks that the clicked tile is adjacent (next) to the empty position
 function isAdjacent(tile) {
     const dx = Math.abs(tile.userData.x - emptyPos.x);
     const dy = Math.abs(tile.userData.y - emptyPos.y);
@@ -148,7 +196,9 @@ function isAdjacent(tile) {
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+// For the sliding animation
 const tweenGroup = new Group();
+
 function moveTile(tile) {
     const { x, y } = tile.userData;
 
@@ -162,12 +212,12 @@ function moveTile(tile) {
         y: 0,
         z: -emptyPos.y * tileSize
     }
-    // tile.position.set(emptyPos.x * tileSize, 0, -emptyPos.y * tileSize);
     const moveTileIween = new Tween(tile.position)
         .to(targetPosition, 500)
         .easing(Easing.Quadratic.Out);
     moveTileIween.start();
     tweenGroup.add(moveTileIween);
+    playHitSound();
     tile.userData.x = emptyPos.x;
     tile.userData.y = emptyPos.y;
     emptyPos = { x, y };
@@ -181,6 +231,7 @@ const sizes = {
     height: window.innerHeight
 }
 
+// Handles the user click
 function onClick(event) {
     mouse.x = (event.clientX / sizes.width) * 2 - 1;
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
@@ -196,6 +247,7 @@ function onClick(event) {
 
 window.addEventListener('click', onClick);
 
+// Check if the puzzle was solved
 const finishedNums = [13, 14, 15, null, 9, 10, 11, 12, 5, 6, 7, 8, 1, 2, 3, 4];
 function checkFinished() {
     for (let i = 0; i < 16; i++) {
@@ -207,6 +259,10 @@ function checkFinished() {
     } 
     return true;
 }
+
+/**
+ * Lights
+ */
 const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
 scene.add(light);
 

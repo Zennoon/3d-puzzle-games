@@ -19,8 +19,7 @@ const scene = new THREE.Scene();
  */
 const hitSound = new Audio('../sounds/hit.mp3');
 
-const playHitSound = (collision) => {
-    console.log('object');
+const playHitSound = (_) => {
     hitSound.volume = 1;
     hitSound.currentTime = 0;
     hitSound.play();
