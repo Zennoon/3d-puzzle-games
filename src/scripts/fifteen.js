@@ -135,22 +135,45 @@ function createTile(num, x, y) {
     return tile;
 }
 
+// Converts array to 4 * 4 matrix
+function reverseGrid(array) {
+  let matrix = [];
+  for (let i = 0; i < 4; i++) {
+    matrix = (array.slice(i * 4, i * 4 + 4)).concat(matrix);
+  }
+  return matrix.flat();
+}
 
-// Makes sure that a given tiles permutation is solvable
-function isSolvable(tiles) {
-    let inversions = 0;
-    for (let i = 0; i < tiles.length; i++) {
-        for (let j = i + 1; j < tiles.length; j++) {
-            if (tiles[i] && tiles[j] && tiles[i] > tiles[j]) {
-                inversions++;
+function isSolvable(grid) {
+    let parity = 0;
+    const gridWidth = Math.sqrt(grid.length);
+    let row = 0;
+    let blankRow = 0;
+
+    for (let i = 0; i < grid.length; i++) {
+        if (i % gridWidth == 0) {
+            row += 1;
+        }
+        if (grid[i] == 0) {
+            blankRow = row;
+            continue;
+        }
+        for (let j = i + 1; j < grid.length; j++) {
+            if (grid[i] > grid[j] && grid[j] != 0) {
+                parity += 1;
             }
         }
     }
 
-    const blankIndex = tiles.indexOf(0);
-    const blankRowFromBottom = 3 - Math.floor(blankIndex / 4);
-
-    return (inversions + blankRowFromBottom) % 2 === 0;
+    if (gridWidth % 2 == 0) {
+        if (blankRow % 2 == 0) {
+            return parity % 2 == 0;
+        } else {
+            return parity % 2 != 0;
+        }
+    } else {
+        return parity % 2 == 0;
+    }
 }
 
 // Generates a tiles permutation that is solvable
@@ -162,8 +185,7 @@ function generateSolvableTiles() {
     do {
         shuffled = [...tiles].sort(() => Math.random() - 0.5);
     } while (!isSolvable(shuffled));
-
-    return shuffled;
+    return reverseGrid(shuffled);
 }
 
 // Create the tile grid
