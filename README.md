@@ -4,9 +4,11 @@ Welcome to **3D Puzzle Games** — a joyful and brain-teasing collection of clas
 
 - 🧠 **Tower of Hanoi**  
 - 🌀 **Maze**
+- 🧩 **Fifteen Puzzle**
 
 Explore, solve, and have fun!
-You can find the deployed site [here](https://3d-puzzle-games.vercel.app)
+
+**You can find the deployed site [here](https://3d-puzzle-games.vercel.app)**
 
 ---
 
@@ -27,6 +29,11 @@ Navigate a red ball through a 3D maze from one end to the other!
 - Avoid dead ends and find your way to the exit!
 - Built with realistic physics for smooth, responsive control
 
+### 🧩 Fifteen Puzzle
+The classic sliding puzzle game — now in 3D!
+- Your goal is to arrange the numbered tiles in order from 1 to 15, using the empty space to move tiles around.
+- Think ahead, slide strategically, and solve the puzzle as fast as you can!
+
 ---
 
 ## 🧱 Tech Stack
@@ -46,7 +53,7 @@ Navigate a red ball through a 3D maze from one end to the other!
 Extract the zipped file and install the dependencies:
 
 ```bash
-cd 3d-games
+cd Group-19-Puzzle-Games
 npm install
 ```
 
@@ -82,3 +89,4 @@ npm run build
 |-----------------|--------------------------------------------|
 | Tower of Hanoi  | Click source tower → destination tower     |
 | Maze            | Use the arrow keys to roll the ball        |
+| Fifteen Puzzle	| Click tiles next to the empty space to move
