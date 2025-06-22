@@ -3,10 +3,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { Tween, Group, Easing } from '@tweenjs/tween.js';
 
+// Toggle help information
 const toggleInfo = document.getElementById('toggle-help');
 const helpDiv = document.getElementById('help-div');
 
-// Toggle help information
 toggleInfo.addEventListener('click', () => {
     helpDiv.classList.toggle('hidden');
 });
@@ -55,7 +55,7 @@ rgbeLoader.load('../textures/environmentMap/2k.hdr', (environmentMap) => {
 })
 
 /**
- * Objects
+ * Base
  */
 const baseGeometry = new THREE.BoxGeometry(21, 1, 8);
 const baseMaterial = new THREE.MeshStandardMaterial({
@@ -115,6 +115,10 @@ function createDisk(radius, height, x, y, towerIndex) {
     disks[towerIndex].push(disk);
 }
 
+/**
+ * Increase or decrease the number of disks
+ */
+
 let numDisks = 4;
 const numDisksInput = document.getElementById('num-disks');
 const numDisksIncr = document.getElementById('incr-disks');
@@ -143,6 +147,7 @@ for (let i = 0; i < numDisks; i++) {
     createDisk((numDisks / 3) - 0.25 * i, 0.5, -7, 0.25 + 0.5 * i, 0);
 }
 
+// Function to replace disks if the number of disks changes
 function replaceDisks() {
     for (const tower of disks) {
         for (const disk of tower) {
@@ -228,28 +233,32 @@ function moveDisk(fromTowerIndex, toTowerIndex) {
 
     const fromDisk = disks[fromTowerIndex][disks[fromTowerIndex].length - 1]; // Get the disk to be moved
     const toDisk = disks[toTowerIndex][disks[toTowerIndex].length - 1]; // Get the top disk from the tower to be moved to
+    // Checking that the topmost disk of the destination tower is not smaller than the disk currently being moved
     if (toDisk && fromDisk.geometry.parameters.radiusTop > toDisk.geometry.parameters.radiusTop) {
-        return; // An attempt to put a larger disk on top of a smaller one
+        return; // An attempt to put a larger disk on top of a smaller one (Invalid move)
     }
 
     disks[fromTowerIndex].pop();
     console.log(disks, toTowerIndex);
 
+    // Get the target position (final position to move the disk to), but for visual purposes, the disk is moved in stages
     const targetPosition = {
         x: towers[toTowerIndex].position.x,
         y: 0.25 + disks[toTowerIndex].length * 0.5,
         z: 0
     };
-    console.log('Here');
-    console.log(targetPosition);
 
     const upPosition = { ...fromDisk.position, y: towerHeight + 1 };
+
+    // Gets disk out of source tower
     const moveUpTween = new Tween(fromDisk.position)
         .to(upPosition, 500)
         .easing(Easing.Quadratic.Out)
+    // Moves disk to the top of destination tower
     const moveSideWaysTween = new Tween(fromDisk.position)
         .to({ x: targetPosition.x }, 1000)
         .easing(Easing.Quadratic.Out)
+    // Gets disk inside the destination tower
     const moveDownTween = new Tween(fromDisk.position)
         .to(targetPosition, 500)
         .easing(Easing.Quadratic.Out)
@@ -281,7 +290,6 @@ function moveDisk(fromTowerIndex, toTowerIndex) {
         base.material.color.set(0xFFD700); // Golden color
 
         console.log("Game finished!");
-        // You can add further logic here for game completion actions
     }
 }
 

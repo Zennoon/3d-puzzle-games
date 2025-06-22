@@ -81,8 +81,7 @@ world.broadphase = new CANNON.SAPBroadphase(world);
 world.allowSleep = true;
 world.gravity.set(0, 0, 0);
 
-// Materials
-const floorPhysicsMaterial = new CANNON.Material('default');
+// Materials (used to dictate what happens when two objects collide)
 const wallPhysicsMaterial = new CANNON.Material('wall');
 const ballPhysicsMaterial = new CANNON.Material('ball');
 
@@ -211,6 +210,7 @@ ballBody.velocity = new CANNON.Vec3(0, 0, 0);
 ballBody.addEventListener('collide', playHitSound);
 world.addBody(ballBody);
 
+// Define the movement of the ball (when clicking arrow keys, we apply an impulse to the center of the ball)
 window.addEventListener('keydown', ({ key }) => {
     switch (key) {
         case 'ArrowUp':
@@ -233,7 +233,7 @@ window.addEventListener('keydown', ({ key }) => {
             ballBody.wakeUp();
             ballBody.applyLocalImpulse(new CANNON.Vec3(0, 0, 1), new CANNON.Vec3(0, 0, 0));
             break;
-        case 'h':
+        case 'h': // For halt
             ballBody.velocity = new CANNON.Vec3(0, 0, 0);
             break;
         default:
@@ -287,7 +287,7 @@ camera.position.z = 10;
 camera.position.y = 5;
 scene.add(camera)
 
-// Controls
+// Controls (only work when the game is finished)
 let controls;
 
 /**
@@ -343,7 +343,7 @@ const tick = () =>
         completed = true;
     }
 
-    // Update camera
+    // Update camera and apply controls if game is finished
     if (completed && !controls) {
         alert('Congratulations! You have finished the maze!')
         camera.position.z = 10;
