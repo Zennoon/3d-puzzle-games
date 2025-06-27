@@ -274,7 +274,7 @@ const finishedNums = [13, 14, 15, null, 9, 10, 11, 12, 5, 6, 7, 8, 1, 2, 3, 4];
 function checkFinished() {
     for (let i = 0; i < 16; i++) {
         if (!tiles[i]) {
-            if (finishedNums[1] !== null) return false;
+            if (finishedNums[i] !== null) return false;
         } else {
             if (tiles[i].userData.num !== finishedNums[i]) return false;
         }
@@ -289,6 +289,21 @@ const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
 scene.add(light);
 
 setupTiles();
+
+window.addEventListener('resize', () =>
+{
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    // Update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
 
 function animate() {
     controls.update();
